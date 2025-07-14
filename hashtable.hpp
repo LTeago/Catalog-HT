@@ -27,8 +27,7 @@ namespace ac
         }
     };
 
-    int proximo_id = 0;
-    int gerar_id() { return proximo_id++; }
+    
 
     template <class KeyType,
               class DataType,
