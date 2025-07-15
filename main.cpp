@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "hashtable.hpp"
 
 struct Elemento
@@ -6,10 +7,29 @@ struct Elemento
     std::string nome;
     std::string categoria;
     std::string campo_extra;
+
+    void exibir() const {
+        std::cout << "Nome: " << nome << "\n";
+        std::cout << "Categoria: " << categoria << "\n";
+        std::cout << "Campo Extra: " << campo_extra << "\n";
+    }
 };
 
 int id = 0;
 int gerar_id() { return id++; }
+
+Elemento criarElemento()
+{
+    Elemento e;
+    std::cin.ignore(); 
+    std::cout << "Digite o nome: ";
+    std::getline(std::cin, e.nome);
+    std::cout << "Digite a categoria: ";
+    std::getline(std::cin, e.categoria);
+    std::cout << "Digite o campo extra: ";
+    std::getline(std::cin, e.campo_extra);
+    return e;
+}
 
 int main()
 {
@@ -25,62 +45,122 @@ int main()
                   << "3 - Buscar elemento por ID\n"
                   << "4 - Exibir todos os elementos da tabela\n"
                   << "5 - Apagar tabela\n"
+                  << "6 - Editar elemento pelo ID (exceto o ID)\n"
                   << "0 - Sair\n\n";
         std::cin >> n;
 
         switch (n)
         {
         case 1:
-            tarefas.push_back(criarTarefa());
+        {
+            Elemento e = criarElemento();
+            int novo_id = gerar_id();
+            tabela.insert(novo_id, e);
+            std::cout << "Elemento inserido com ID: " << novo_id << "\n";
             break;
+        }
         case 2:
         {
             int id;
-            std::cout << "Digite o ID da tarefa a remover: ";
+            std::cout << "Digite o ID do elemento a remover: ";
             std::cin >> id;
-            tarefas.removerPorID(id);
+            if (tabela.erase(id))
+                std::cout << "Elemento removido com sucesso.\n";
+            else
+                std::cout << "Elemento nao encontrado.\n";
             break;
         }
         case 3:
         {
-            int prio;
-            std::cout << "Digite a prioridade a remover: ";
-            std::cin >> prio;
-            tarefas.removerPorPrio(prio);
+            int id;
+            std::cout << "Digite o ID do elemento a buscar: ";
+            std::cin >> id;
+            Elemento resultado;
+            if (tabela.retrieve(id, resultado))
+                resultado.exibir();
+            else
+                std::cout << "Elemento nao encontrado.\n";
             break;
         }
         case 4:
         {
-            int id;
-            std::cout << "Digite o ID da tarefa a buscar: ";
-            std::cin >> id;
-            tarefas.buscarPorId(id);
+            std::cout << "Elementos da tabela:\n";
+            for (int i = 0; i < 100; ++i) 
+            {
+                try {
+                    Elemento& e = tabela.at(i);
+                    std::cout << "ID " << i << ":\n";
+                    e.exibir();
+                    std::cout << "---------------------\n";
+                } catch (const std::out_of_range&) {
+                    continue; 
+                }
+            }
             break;
         }
         case 5:
-        {
-            tarefas.exibirTarefas();
+{
+    char c;
+    std::cout << "Tem certeza que deseja apagar toda a tabela? (S/N): ";
+    std::cin >> c;
+    if (c == 'S' || c == 's') {
+        tabela.clear();
+        std::cout << "Tabela apagada com sucesso.\n";
+    }
+    break;
+}
+case 6:
+{
+    int id;
+    std::cout << "Digite o ID do elemento a editar: ";
+    std::cin >> id;
+
+    try {
+        Elemento& e = tabela.at(id);
+
+        int opcao_edit;
+        std::cout << "\nQual campo deseja editar?\n"
+                  << "1 - Nome\n"
+                  << "2 - Categoria\n"
+                  << "3 - Campo Extra\n"
+                  << "Digite a opcao: ";
+        std::cin >> opcao_edit;
+        std::cin.ignore(); 
+
+        switch (opcao_edit) {
+        case 1:
+            std::cout << "Digite o novo nome: ";
+            std::getline(std::cin, e.nome);
             break;
-        }
-        case 6:
-        {
-            char c;
-            std::cout << "Tem certeza? Digite 'S' para Sim ou 'N' para Não.\n";
-            std::cin >> c;
-            if (c == 'S' || c == 's')
-                tarefas.clear();
+        case 2:
+            std::cout << "Digite a nova categoria: ";
+            std::getline(std::cin, e.categoria);
             break;
+        case 3:
+            std::cout << "Digite o novo campo extra: ";
+            std::getline(std::cin, e.campo_extra);
+            break;
+        default:
+            std::cout << "Opcao invalida.\n";
         }
+
+        std::cout << "Elemento atualizado com sucesso.\n";
+    } catch (const std::out_of_range&) {
+        std::cout << "Elemento com ID informado nao encontrado.\n";
+    }
+    break;
+}
+
+
         case 0:
         {
             std::cout << "Encerrando o programa.\n";
             break;
         }
         default:
-            std::cout << "Opção inválida.\n";
+            std::cout << "Opcao invalida.\n";
         }
     } while (n != 0);
-    
 
-        return 0;
+    return 0;
 }
