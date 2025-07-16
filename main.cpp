@@ -8,20 +8,21 @@ struct Elemento
     std::string categoria;
     std::string campo_extra;
 
-    void exibir() const {
+    void exibir() const
+    {
         std::cout << "Nome: " << nome << "\n";
         std::cout << "Categoria: " << categoria << "\n";
         std::cout << "Campo Extra: " << campo_extra << "\n";
     }
 };
 
-int id = 0;
+int id = 1;
 int gerar_id() { return id++; }
 
 Elemento criarElemento()
 {
     Elemento e;
-    std::cin.ignore(); 
+    std::cin.ignore();
     std::cout << "Digite o nome: ";
     std::getline(std::cin, e.nome);
     std::cout << "Digite a categoria: ";
@@ -62,17 +63,29 @@ int main()
         case 2:
         {
             int id;
-            std::cout << "Digite o ID do elemento a remover: ";
-            std::cin >> id;
-            if (tabela.erase(id))
-                std::cout << "Elemento removido com sucesso.\n";
+            if (tabela.isEmpty())
+                std::cout << "A tabela está vazia. Adicione elementos!\n";
             else
-                std::cout << "Elemento nao encontrado.\n";
+            {
+                std::cout << "Digite o ID do elemento a remover: ";
+                std::cin >> id;
+                {
+                    if (tabela.erase(id))
+                        std::cout << "Elemento removido com sucesso.\n";
+                    else
+                        std::cout << "Elemento nao encontrado.\n";
+                }
+            }
             break;
         }
         case 3:
         {
             int id;
+            if (tabela.isEmpty())
+            {
+                std::cout << "A tabela está vazia. Adicione elementos!\n";
+                break;
+            }
             std::cout << "Digite o ID do elemento a buscar: ";
             std::cin >> id;
             Elemento resultado;
@@ -84,76 +97,101 @@ int main()
         }
         case 4:
         {
-            std::cout << "Elementos da tabela:\n";
-            for (int i = 0; i < 100; ++i) 
+            if (tabela.isEmpty())
             {
-                try {
-                    Elemento& e = tabela.at(i);
-                    std::cout << "ID " << i << ":\n";
-                    e.exibir();
-                    std::cout << "---------------------\n";
-                } catch (const std::out_of_range&) {
-                    continue; 
+                std::cout << "A tabela está vazia. Adicione elementos!\n";
+            }
+            else
+            {
+                std::cout << "Elementos da tabela:\n";
+                for (int i = 0; i < 100; ++i)
+                {
+                    try
+                    {
+                        Elemento &e = tabela.at(i);
+                        std::cout << "ID: " << i << "\n";
+                        e.exibir();
+                        std::cout << "---------------------\n";
+                    }
+                    catch (const std::out_of_range &)
+                    {
+                        continue;
+                    }
                 }
             }
             break;
         }
         case 5:
-{
-    char c;
-    std::cout << "Tem certeza que deseja apagar toda a tabela? (S/N): ";
-    std::cin >> c;
-    if (c == 'S' || c == 's') {
-        tabela.clear();
-        std::cout << "Tabela apagada com sucesso.\n";
-    }
-    break;
-}
-case 6:
-{
-    int id;
-    std::cout << "Digite o ID do elemento a editar: ";
-    std::cin >> id;
-
-    try {
-        Elemento& e = tabela.at(id);
-
-        int opcao_edit;
-        std::cout << "\nQual campo deseja editar?\n"
-                  << "1 - Nome\n"
-                  << "2 - Categoria\n"
-                  << "3 - Campo Extra\n"
-                  << "Digite a opcao: ";
-        std::cin >> opcao_edit;
-        std::cin.ignore(); 
-
-        switch (opcao_edit) {
-        case 1:
-            std::cout << "Digite o novo nome: ";
-            std::getline(std::cin, e.nome);
+        {
+            char c;
+            if (tabela.isEmpty())
+            {
+                std::cout << "A tabela já está vazia. Adicione elementos!\n";
+                break;
+            }
+            std::cout << "Tem certeza que deseja apagar toda a tabela? (S/N): ";
+            std::cin >> c;
+            if (c == 'S' || c == 's')
+            {
+                tabela.clear();
+                std::cout << "Tabela apagada com sucesso.\n";
+            }
             break;
-        case 2:
-            std::cout << "Digite a nova categoria: ";
-            std::getline(std::cin, e.categoria);
-            break;
-        case 3:
-            std::cout << "Digite o novo campo extra: ";
-            std::getline(std::cin, e.campo_extra);
-            break;
-        default:
-            std::cout << "Opcao invalida.\n";
         }
+        case 6:
+        {
+            int id;
+            if (tabela.isEmpty())
+            {
+                std::cout << "A tabela está vazia. Adicione elementos!\n";
+                break;
+            }
+            std::cout << "Digite o ID do elemento a editar: ";
+            std::cin >> id;
 
-        std::cout << "Elemento atualizado com sucesso.\n";
-    } catch (const std::out_of_range&) {
-        std::cout << "Elemento com ID informado nao encontrado.\n";
-    }
-    break;
-}
+            try
+            {
+                Elemento &e = tabela.at(id);
 
+                int opcao_edit;
+                std::cout << "\nQual campo deseja editar?\n"
+                          << "1 - Nome\n"
+                          << "2 - Categoria\n"
+                          << "3 - Campo Extra\n"
+                          << "Digite a opcao: ";
+                std::cin >> opcao_edit;
+                std::cin.ignore();
+
+                switch (opcao_edit)
+                {
+                case 1:
+                    std::cout << "Digite o novo nome: ";
+                    std::getline(std::cin, e.nome);
+                    break;
+                case 2:
+                    std::cout << "Digite a nova categoria: ";
+                    std::getline(std::cin, e.categoria);
+                    break;
+                case 3:
+                    std::cout << "Digite o novo campo extra: ";
+                    std::getline(std::cin, e.campo_extra);
+                    break;
+                default:
+                    std::cout << "Opcao invalida.\n";
+                }
+
+                std::cout << "Elemento atualizado com sucesso.\n";
+            }
+            catch (const std::out_of_range &)
+            {
+                std::cout << "Elemento com ID informado nao encontrado.\n";
+            }
+            break;
+        }
 
         case 0:
         {
+            std::cout << "Quantidade de colisões: " << tabela.qtdColisoes() << "\n";
             std::cout << "Encerrando o programa.\n";
             break;
         }
